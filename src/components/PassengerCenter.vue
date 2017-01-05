@@ -1,6 +1,6 @@
 <template>
     <section>
-        <button class="add-passenger">Add a Passenger!</button>
+        <button class="add-passenger" @click="toggleAddButton">{{displayAddButton}}</button>
         <table>
             <tbody>
                 <tr>
@@ -9,6 +9,15 @@
                     <td class="table-header">Edit:</td>
                     <td class="table-header">Delete:</td>
                 </tr>
+                <tr v-if="showRow">
+                    <td>New Passenger:</td>
+                    <td>
+                        <input v-model="newPassenger.name">
+                    </td>
+                    <td>                        
+                        <button @click="addPassenger">Save</button>
+                    </td>
+                    <td></td>
                 <tr v-for="passenger in passengers">
                     <td>{{passenger.id}}</td>
                     <td>{{passenger.name}}</td>
@@ -24,7 +33,10 @@
 export default {
   data () {
     return {
-      passengers: []
+      passengers: [],
+      showRow: false,
+      displayAddButton: 'Add a Passenger',
+      newPassenger: {name: ''}
     }
   },
   methods: {
@@ -36,6 +48,18 @@ export default {
     deletePassenger(idToDelete) {
         this.$http.delete(`passengerAPI.php?id=${idToDelete}`);
         this.passengers = this.passengers.filter(passenger => passenger.id !== idToDelete);
+    },
+    toggleAddButton() {
+        this.showRow = !this.showRow;
+        if (!this.showRow) this.displayAddButton = 'Add a Passenger';
+        else this.displayAddButton = 'Hide Adding Passenger';
+    },
+    addPassenger() {
+        this.$http.post('passengerAPI.php', this.newPassenger)
+            .then(() => {
+                this.loadPassengers()
+                this.newPassenger = {name: ''}
+            })
     }
   },
     created () {

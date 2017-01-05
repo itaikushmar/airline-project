@@ -1,6 +1,6 @@
 <template>
     <section>
-        <button class="add-plane" @click="addPlane">Add a Plane!</button>
+        <button class="add-plane" @click="toggleAddButton">{{displayAddButton}}</button>
         <table>
             <tbody>
                 <tr>
@@ -10,6 +10,18 @@
                     <td class="table-header">Edit:</td>
                     <td class="table-header">Delete:</td>
                 </tr>
+                <tr v-if="showRow">
+                    <td>New Plane:</td>
+                    <td>
+                        <input v-model="newPlane.model">
+                    </td>
+                    <td>
+                        <input v-model="newPlane.seat_count">
+                    </td>
+                    <td>
+                        <button @click="addPlane">Save</button>
+                    </td>
+                    <td></td>
                 <tr v-for="plane in planes">
                     <td>{{plane.id}}</td>
                     <td>{{plane.model}}</td>
@@ -26,7 +38,10 @@
 export default {
   data () {
     return {
-      planes: []
+      planes: [],
+      newPlane: {model: '', seat_count: ''},
+      showRow: false,
+      displayAddButton: 'Add a Plane'
     }
   },
   methods: {
@@ -39,10 +54,19 @@ export default {
         this.$http.delete(`planeAPI.php?id=${idToDelete}`);
         this.planes = this.planes.filter(plane => plane.id !== idToDelete);
     },
+    toggleAddButton() {
+        this.showRow = !this.showRow;
+        if (!this.showRow) this.displayAddButton = 'Add a Plane';
+        else this.displayAddButton = 'Hide Adding Plane';
+    },
     addPlane() {
-        this.$http.post('planeAPI.php')
+        this.$http.post('planeAPI.php', this.newPlane)
+            .then(() => {
+                this.loadPlanes()
+                this.newPlane = {model: '', seat_count: ''}
+            })
     }
-  },
+},
   created () {
       this.loadPlanes();
   }

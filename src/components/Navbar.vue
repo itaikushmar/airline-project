@@ -16,13 +16,6 @@ export default {
     return {
         section: 'book'
     }
-  },
-  methods: {
-      changeSection(section) {
-          this.section = section;
-          console.log(this.section)
-          this.$emit('changeSection', section)
-      }
     }
 }
 </script>
@@ -33,5 +26,9 @@ export default {
     }
     .section-link {
         margin: 5px;
+        color: black;
+    }
+    .section-link:hover {
+        color: blue;
     }
 </style>
